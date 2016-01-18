@@ -1,0 +1,31 @@
+{
+  "name": "askozia-records-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "start-prod": "NODE_ENV=production node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Телеграм","Telegram","bot",
+    "Астериск", "Asterisk", "Аскозия","Askozia",
+    "nodejs"
+  ],
+  "author": "Sergey Filkin",
+  "license": "ISC",
+  "dependencies": {
+    "asterisk-manager": "^0.1.15",
+    "async": "^1.5.0",
+    "audio-converter": "^1.0.7",
+    "express": "^4.13.3",
+    "forEachAsync": "^3.0.0",
+    "fs": "0.0.2",
+    "moment": "^2.10.6",
+    "node-telegram-bot-api": "^0.17.0",
+    "request": "^2.67.0",
+    "string": "^3.3.1",
+    "tmp": "0.0.28"
+  }
+}
