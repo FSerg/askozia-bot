@@ -1,12 +1,14 @@
 <?php
 /*-----------------------------------------------------
 // Askozia records Node Downloader // 10000123
-// Загрузка записей разговоров для NodeJS приложения
+// Альтернатива ПРО // 2016-01-19
+// Загрузка записей разговоров для NodeJS приложения:
+// https://github.com/FSerg/askozia-bot
 -------------------------------------------------------
-Asterisk 1.8.4.4
-PHP 4.4.9
-sqlite3 -version 3.7.0
+Asterisk 1.8.4.4 / PHP 4.4.9 / sqlite3 -version 3.7.0
 AGI phpagi.php,v 2.14 2005/05/25 20:30:46
+// Сама загрузка на клиента возлагается на скрипт:
+/offload/rootfs/usr/www_provisioning/1c/download.php
 -------------------------------------------------------*/
 require("phpagi.php");
 require("guiconfig.inc");
@@ -57,7 +59,7 @@ if($EXTEN == "h"){
     // $faxrecfile = rtrim(exec("sqlite3 $cdr_db \"$zapros\""));
 
     $output   = array();
-    $agi->verbose("Start!");
+    $agi->verbose("Start request!");
     $answer = exec("sqlite3 $cdr_db \"$zapros\"", $output);
   }
 
@@ -72,13 +74,20 @@ if($EXTEN == "h"){
       $_data = rtrim($_data);
       $lines = $lines.$_data."";
       $counter=$counter+1;
-      $agi->verbose("Data".$counter.": ".$_data); // пишем в лог полученные данные, пока для отладки
+      $agi->verbose("Data".$counter.": ".$_data); // write log, just for debugging
   }
 
   if(strlen($lines) > 4){
+      // send UserEvent with results (in $lines)
       $agi->exec("UserEvent",
       "GetRecordsFromNode,from_id:$from_id,Lines:$lines");
-      $agi->verbose("End!");
+      $agi->verbose("End request (something found)!");
+  }
+  else {
+      // send UserEvent about empty results
+      $agi->exec("UserEvent",
+      "NoRecordsFoundNode,from_id:$from_id,tel:$src");
+      $agi->verbose("End request (nothing found)!");
   }
 }
 

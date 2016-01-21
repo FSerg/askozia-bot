@@ -32,6 +32,7 @@ ami.on('connect', function(evt) {
 
 ami.on('userevent', function(event) {
     // console.log(event); // for debug only - show all userevent
+
     if (event.userevent == 'GetRecordsFromNode') {
         var from_id = event.from_id;
         var answer_text = event.lines;
@@ -65,10 +66,19 @@ ami.on('userevent', function(event) {
         GetFilesAndSendAsync(records, from_id);
 
     }
-    else {
-        // console.log("Another user event:");
-        // console.log(event);
+
+    if (event.userevent == 'NoRecordsFoundNode') {
+        // send Telegram message about empty results
+        console.log('Nothing found by number: ' + event.tel);
+        console.log('==========================================================');
+
+        var messageText = "По номеру: " + event.tel + " не найдено ни одной записи!";
+        bot.sendMessage(event.from_id, messageText);
     }
+
+    // console.log("Another user event:");
+    // console.log(event);
+
 }); //ami.on('userevent')
 
 ami.connect(function(){
@@ -160,7 +170,7 @@ var GetFilesAndSendAsync = function(records, from_id) {
                     }
                     else {
                         console.log("File is empty (deleting): " + tempNameWav);
-                        fs.unlinkSync('./' + tempNameWav); 
+                        fs.unlinkSync('./' + tempNameWav);
                         fs.rmdirSync('./' + tmpDir.name); // and don't forget delete empty temp dir
                     }
 
@@ -220,9 +230,6 @@ bot.onText(/\/start$/, function (msg, match) {
 bot.onText(/^7[0-9]{10,10}$/, function (msg, match) {
     var fromId = msg.from.id;
     var telephone = msg.text;
-
-    console.log("IDS: ");
-    console.log(config.ids);
 
     // проверка авторизации
     if(!in_array(fromId, config.ids)) {
